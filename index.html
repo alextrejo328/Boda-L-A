@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- MathJax for high quality LaTeX rendering -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         :root {
@@ -15,6 +16,7 @@
             --gold: #C5A059;
             --gold-deep: #A67C37;
             --text-dark: #3a352f;
+            --petal-outline: #A3937C; /* Color del contorno de los pétalos */
         }
 
         body, html {
@@ -29,7 +31,7 @@
         .font-serif { font-family: 'Cinzel', serif; }
         .font-script { font-family: 'Great+Vibes', cursive; }
 
-        /* Pantalla de Apertura */
+        /* Cover Screen */
         #intro-overlay {
             position: fixed;
             inset: 0;
@@ -44,7 +46,7 @@
 
         #intro-overlay.hidden { transform: translateY(-100%); }
 
-        /* Canvas para Pétalos Interactivos */
+        /* Interactive Petal Canvas */
         #petal-canvas {
             position: fixed;
             inset: 0;
@@ -52,7 +54,7 @@
             z-index: 500;
         }
 
-        /* Anillos Dorados */
+        /* Gold Rings Styling */
         .gold-ring {
             fill: none;
             stroke: url(#ringGrad);
@@ -60,7 +62,7 @@
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
         }
 
-        /* Símbolo de Infinito con Movimiento Continuo */
+        /* Infinity Symbol with Continuous Flow */
         .infinity-path {
             stroke-dasharray: 1000;
             stroke-dashoffset: 1000;
@@ -72,7 +74,7 @@
             100% { stroke-dashoffset: 0; }
         }
 
-        /* Revelación */
+        /* Scroll Reveal Animations */
         .reveal { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
         .active .reveal { opacity: 1; transform: translateY(0); }
 
@@ -109,7 +111,7 @@
             justify-content: center;
         }
 
-        /* Corazón Grande Centrado en Intro */
+        /* Pulsing Heart Animation */
         .heart-main {
             color: var(--gold);
             animation: softPulse 2s infinite ease-in-out;
@@ -136,10 +138,10 @@
         </div>
     </div>
 
-    <!-- CANVAS PARA PÉTALOS (AL FRENTE E INTERACTIVOS) -->
+    <!-- CANVAS PARA PÉTALOS INTERACTIVOS -->
     <canvas id="petal-canvas"></canvas>
 
-    <!-- CONTENIDO -->
+    <!-- CONTENIDO PRINCIPAL -->
     <main id="main-content" class="max-w-2xl w-full px-4 py-16 text-center">
         
         <div class="card-body p-6 md:p-16 rounded-sm">
@@ -159,7 +161,7 @@
                 </svg>
             </div>
 
-            <!-- Símbolo de Infinito con Movimiento Continuo -->
+            <!-- Símbolo de Infinito -->
             <div class="relative py-20 mb-4">
                 <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-40" viewBox="0 0 400 240" fill="none">
                     <path d="M200,120 C140,50 40,50 40,120 C40,190 140,190 200,120 C260,50 360,50 360,120 C360,190 260,190 200,120" stroke="var(--gold)" stroke-width="1" opacity="0.3" />
@@ -181,14 +183,14 @@
                 <p>"Dos almas integradas en una sola historia infinita."</p>
             </div>
 
-            <!-- Fecha -->
+            <!-- Fecha del Evento -->
             <div class="mb-16 reveal" style="transition-delay: 1s;">
                 <div class="h-px w-24 bg-[var(--gold)] mx-auto mb-8 opacity-40"></div>
                 <p class="font-serif text-2xl md:text-3xl tracking-[0.4em] uppercase mb-2">Sábado 14 de Marzo</p>
                 <p class="font-serif text-lg tracking-[0.2em] text-gray-400">Dos mil veintiséis</p>
             </div>
 
-            <!-- Ceremonia -->
+            <!-- Sección Ceremonia -->
             <section class="mb-16 reveal" style="transition-delay: 1.2s;">
                 <h3 class="font-script text-5xl text-[var(--gold-deep)] mb-6">Ceremonia Civil</h3>
                 <div class="space-y-3 mb-8 text-gray-600">
@@ -201,7 +203,7 @@
                 </a>
             </section>
 
-            <!-- Recepción -->
+            <!-- Sección Recepción -->
             <section class="mb-20 reveal" style="transition-delay: 1.4s;">
                 <h3 class="font-script text-5xl text-[var(--gold-deep)] mb-6">Recepción</h3>
                 <div class="space-y-3 mb-8 text-gray-600">
@@ -214,7 +216,7 @@
                 </a>
             </section>
 
-            <!-- Contador -->
+            <!-- Contador Regresivo -->
             <div class="mb-16 reveal" style="transition-delay: 1.6s;">
                 <div id="countdown" class="flex justify-center gap-6 md:gap-10 font-serif text-[var(--gold-deep)]">
                     <div class="flex flex-col"><span id="days" class="text-3xl">00</span><span class="text-[9px] uppercase tracking-widest mt-2">Días</span></div>
@@ -224,7 +226,7 @@
                 </div>
             </div>
 
-            <!-- WhatsApp -->
+            <!-- Botón RSVP WhatsApp -->
             <div class="reveal pb-8" style="transition-delay: 1.8s;">
                 <a href="https://wa.me/525617957682?text=¡Hola!%20Confirmamos%20nuestra%20asistencia%20a%20la%20boda%20de%20Leslie%20y%20Alejandro." 
                    target="_blank"
@@ -246,7 +248,7 @@
     <script>
         lucide.createIcons();
 
-        // --- SISTEMA DE PÉTALOS INTERACTIVOS (CANVAS) ---
+        // --- INTERACTIVE PETAL SYSTEM ---
         const canvas = document.getElementById('petal-canvas');
         const ctx = canvas.getContext('2d');
         let petals = [];
@@ -262,7 +264,6 @@
         window.addEventListener('resize', resize);
         resize();
 
-        // Capturar toque o ratón para interacción
         const handleInteraction = (e) => {
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -285,35 +286,32 @@
             init() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height - canvas.height;
-                this.size = Math.random() * 10 + 8;
+                this.size = Math.random() * 8 + 6;
                 this.speedX = Math.random() * 2 - 1;
-                this.speedY = Math.random() * 1 + 1.5;
+                this.speedY = Math.random() * 1.2 + 1.2;
                 this.rotation = Math.random() * 360;
                 this.rotationSpeed = Math.random() * 2 - 1;
-                this.opacity = Math.random() * 0.5 + 0.4;
+                this.opacity = Math.random() * 0.4 + 0.5;
             }
 
             update() {
-                // Movimiento base
-                this.y += this.speedY + (scrollVelocity * 0.05); // Reacciona al scroll
-                this.x += this.speedX + Math.sin(this.y / 50); // Oscilación suave
+                this.y += this.speedY + (scrollVelocity * 0.05);
+                this.x += this.speedX + Math.sin(this.y / 50);
 
-                // Reacción al "Touch" o "Mouse" (Repulsión)
                 const dx = this.x - mouse.x;
                 const dy = this.y - mouse.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                const maxDist = 120;
+                const maxDist = 130;
 
                 if (distance < maxDist) {
                     const force = (maxDist - distance) / maxDist;
-                    this.x += (dx / distance) * force * 15;
-                    this.y += (dy / distance) * force * 15;
+                    this.x += (dx / distance) * force * 12;
+                    this.y += (dy / distance) * force * 12;
                 }
 
                 this.rotation += this.rotationSpeed;
 
-                // Reiniciar si sale de pantalla
-                if (this.y > canvas.height) {
+                if (this.y > canvas.height + 20) {
                     this.init();
                 }
             }
@@ -324,13 +322,19 @@
                 ctx.rotate((this.rotation * Math.PI) / 180);
                 ctx.globalAlpha = this.opacity;
                 
-                // Dibujar forma de pétalo
+                // Draw Petal Shape
                 ctx.beginPath();
                 ctx.fillStyle = "#FFFFFF";
+                // Color del contorno (oscuro pero estético)
+                ctx.strokeStyle = "rgba(163, 147, 124, 0.6)"; 
+                ctx.lineWidth = 1;
+
                 ctx.moveTo(0, 0);
                 ctx.bezierCurveTo(this.size, -this.size, this.size, this.size, 0, this.size);
                 ctx.bezierCurveTo(-this.size, this.size, -this.size, -this.size, 0, 0);
+                
                 ctx.fill();
+                ctx.stroke(); // Dibujar el contorno
                 ctx.restore();
             }
         }
@@ -341,23 +345,24 @@
                 p.update();
                 p.draw();
             });
-            scrollVelocity *= 0.9; // Fricción del scroll
+            scrollVelocity *= 0.92;
             requestAnimationFrame(animate);
         }
 
-        // --- FUNCIONES DE LA INVITACIÓN ---
         function revealInvitation() {
             document.getElementById('intro-overlay').classList.add('hidden');
             document.body.classList.add('active');
             
-            // Iniciar pétalos tras abrir
-            for (let i = 0; i < 40; i++) {
+            // Generate petals on open
+            for (let i = 0; i < 45; i++) {
                 petals.push(new Petal());
             }
             animate();
+            
+            // Check scroll reveal on load
+            revealOnScroll();
         }
 
-        // Contador de tiempo
         const weddingDate = new Date('March 14, 2026 12:30:00').getTime();
         function updateTimer() {
             const now = new Date().getTime();
@@ -377,7 +382,6 @@
         setInterval(updateTimer, 1000);
         updateTimer();
 
-        // Reveal animations on scroll
         function revealOnScroll() {
             var reveals = document.querySelectorAll(".reveal");
             for (var i = 0; i < reveals.length; i++) {
@@ -393,3 +397,4 @@
 </body>
 </html>
 
+    
