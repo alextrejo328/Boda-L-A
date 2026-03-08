@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boda Leslie & Alejandro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --ivory-dark: #E2D9C8; 
+            --ivory-light: #FDFBF7;
+            --gold: #C5A059;
+            --gold-deep: #A67C37;
+            --text-dark: #3a352f;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--ivory-dark);
+            color: var(--text-dark);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .font-serif { font-family: 'Cinzel', serif; }
+        .font-script { font-family: 'Great+Vibes', cursive; }
+
+        /* Pantalla de Apertura */
+        #intro-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: var(--ivory-light);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+        }
+
+        #intro-overlay.hidden { transform: translateY(-100%); }
+
+        /* Pétalos Blancos Frontales */
+        #petal-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 500;
+        }
+
+        .petal {
+            position: absolute;
+            background-color: #FFFFFF;
+            border-radius: 150% 0 150% 0;
+            opacity: 0.95;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg) translateX(120px); opacity: 0; }
+        }
+
+        /* Anillos Dorados */
+        .gold-ring {
+            fill: none;
+            stroke: url(#ringGrad);
+            stroke-width: 5;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        }
+
+        /* Greca Artística Animada */
+        .greca-path {
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            transition: stroke-dashoffset 4.5s ease-in-out;
+        }
+
+        .active .greca-path { stroke-dashoffset: 0; }
+
+        /* Revelación */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
+        .active .reveal { opacity: 1; transform: translateY(0); }
+
+        .card-body {
+            background-color: var(--ivory-light);
+            border: 1px solid var(--gold);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .btn-action {
+            padding: 0.8rem 2rem;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.7rem;
+            transition: all 0.4s;
+            background: transparent;
+            cursor: pointer;
+            display: inline-block;
+            border-radius: 4px;
+        }
+
+        .btn-action:hover { background: var(--gold); color: white; transform: scale(1.02); }
+
+        .formula-container {
+            font-size: clamp(1rem, 5vw, 1.8rem); 
+            color: var(--gold-deep);
+            margin: 2rem 0;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Estilo Corazón Animado Central */
+        .heart-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .heart-main {
+            color: var(--gold);
+            animation: softPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes softPulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center">
+
+    <!-- COVER DIGITAL -->
+    <div id="intro-overlay">
+        <div class="text-center px-6">
+            <div class="heart-container mb-8">
+                <!-- Corazón Grande y Centrado -->
+                <i data-lucide="heart" class="heart-main" size="80" stroke-width="1.5"></i>
+            </div>
+            <p class="font-serif text-[10px] tracking-[0.5em] mb-4 text-gray-400 uppercase">Nuestra historia comienza</p>
+            <h2 class="font-script text-7xl md:text-9xl text-[var(--text-dark)] mb-8">Leslie & Alejandro</h2>
+            <button onclick="revealInvitation()" class="btn-action font-serif">Abrir Invitación</button>
+        </div>
+    </div>
+
+    <!-- PÉTALOS BLANCOS -->
+    <div id="petal-container"></div>
+
+    <!-- CONTENIDO -->
+    <main id="main-content" class="max-w-2xl w-full px-4 py-16 text-center">
+        
+        <div class="card-body p-6 md:p-16 rounded-sm">
+            
+            <!-- Anillos Dorados Superiores -->
+            <div class="mb-10 reveal" style="transition-delay: 0.2s;">
+                <svg width="120" height="70" viewBox="0 0 120 70" class="mx-auto">
+                    <defs>
+                        <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#F9F1D0" />
+                            <stop offset="50%" style="stop-color:#C5A059" />
+                            <stop offset="100%" style="stop-color:#8B6D3F" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="gold-ring" cx="42" cy="35" r="28" />
+                    <circle class="gold-ring" cx="78" cy="35" r="28" />
+                </svg>
+            </div>
+
+            <!-- Greca Artística Refinada -->
+            <div class="relative py-16 mb-4">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-50" viewBox="0 0 400 220" fill="none">
+                    <path class="greca-path" d="M10,110 C10,40 60,10 200,10 C340,10 390,40 390,110 C390,180 340,210 200,210 C60,210 10,180 10,110 M30,110 C30,70 80,40 200,40 C320,40 370,70 370,110 C370,150 320,180 200,180 C80,180 30,150 30,110" stroke="var(--gold)" stroke-width="1" />
+                    <circle class="reveal" cx="200" cy="10" r="3" fill="var(--gold)" />
+                    <circle class="reveal" cx="200" cy="210" r="3" fill="var(--gold)" />
+                </svg>
+                
+                <div class="relative z-10 reveal" style="transition-delay: 0.4s;">
+                    <p class="font-script text-3xl text-[var(--gold-deep)] mb-4 italic">Nuestro matrimonio</p>
+                    <h1 class="font-script text-7xl md:text-9xl text-[var(--text-dark)] leading-tight">Leslie & Alejandro</h1>
+                </div>
+            </div>
+
+            <!-- Fórmula Matemática -->
+            <div class="formula-container reveal" style="transition-delay: 0.6s;">
+                $$\oint (L + A) d\tau = \pi \cdot \infty$$
+            </div>
+
+            <div class="mb-14 reveal italic text-gray-400 font-serif text-base px-6" style="transition-delay: 0.8s;">
+                <p>"Dos almas integradas en una sola historia infinita."</p>
+            </div>
+
+            <!-- Fecha -->
+            <div class="mb-16 reveal" style="transition-delay: 1s;">
+                <div class="h-px w-24 bg-[var(--gold)] mx-auto mb-8 opacity-40"></div>
+                <p class="font-serif text-2xl md:text-3xl tracking-[0.4em] uppercase mb-2">Sábado 14 de Marzo</p>
+                <p class="font-serif text-lg tracking-[0.2em] text-gray-400">Dos mil veintiséis</p>
+            </div>
+
+            <!-- Ceremonia -->
+            <section class="mb-16 reveal" style="transition-delay: 1.2s;">
+                <h3 class="font-script text-5xl text-[var(--gold-deep)] mb-6">Ceremonia Civil</h3>
+                <div class="space-y-3 mb-8 text-gray-600">
+                    <p class="font-bold uppercase tracking-widest text-[var(--text-dark)]">Juzgado 20 del Registro Civil</p>
+                    <p>Jardín Plaza Hidalgo 1, Coyoacán, CDMX</p>
+                    <p class="font-serif text-3xl mt-4 text-[var(--text-dark)]">12:30 PM</p>
+                </div>
+                <a href="https://www.google.com/maps/search/?api=1&query=Juzgado+20+del+Registro+Civil+Jardin+Plaza+Hidalgo+1+Coyoacan" target="_blank" class="btn-action font-serif">
+                    <i data-lucide="map-pin" class="inline-block mr-2" size="14"></i> Ubicación Ceremonia
+                </a>
+            </section>
+
+            <!-- Recepción -->
+            <section class="mb-20 reveal" style="transition-delay: 1.4s;">
+                <h3 class="font-script text-5xl text-[var(--gold-deep)] mb-6">Recepción</h3>
+                <div class="space-y-3 mb-8 text-gray-600">
+                    <p class="font-bold uppercase tracking-widest text-sm text-[var(--text-dark)]">Paseos de los Granados 110 int 202</p>
+                    <p>Paseos de Taxqueña, Coyoacán, 04250</p>
+                    <p class="font-serif text-3xl mt-4 text-[var(--gold-deep)]">15:00 Horas</p>
+                </div>
+                <a href="https://www.google.com/maps/search/?api=1&query=Paseos+de+los+Granados+110+Paseos+de+Taxqueña+Coyoacán+04250" target="_blank" class="btn-action font-serif">
+                    <i data-lucide="navigation" class="inline-block mr-2" size="14"></i> Ubicación Recepción
+                </a>
+            </section>
+
+            <!-- Contador -->
+            <div class="mb-16 reveal" style="transition-delay: 1.6s;">
+                <div id="countdown" class="flex justify-center gap-6 md:gap-10 font-serif text-[var(--gold-deep)]">
+                    <div class="flex flex-col"><span id="days" class="text-3xl">00</span><span class="text-[9px] uppercase tracking-widest mt-2">Días</span></div>
+                    <div class="flex flex-col"><span id="hours" class="text-3xl">00</span><span class="text-[9px] uppercase tracking-widest mt-2">Hrs</span></div>
+                    <div class="flex flex-col"><span id="mins" class="text-3xl">00</span><span class="text-[9px] uppercase tracking-widest mt-2">Min</span></div>
+                    <div class="flex flex-col"><span id="secs" class="text-3xl">00</span><span class="text-[9px] uppercase tracking-widest mt-2">Seg</span></div>
+                </div>
+            </div>
+
+            <!-- WhatsApp -->
+            <div class="reveal pb-8" style="transition-delay: 1.8s;">
+                <a href="https://wa.me/525617957682?text=¡Hola!%20Confirmamos%20nuestra%20asistencia%20a%20la%20boda%20de%20Leslie%20y%20Alejandro." 
+                   target="_blank"
+                   class="inline-block px-12 py-4 bg-[var(--gold)] text-white rounded-full font-serif uppercase text-[10px] tracking-[0.4em] shadow-xl hover:bg-[var(--gold-deep)] transition-all transform hover:scale-105">
+                    Confirmar por WhatsApp
+                </a>
+                <p class="mt-8 text-[11px] text-gray-400 font-medium italic">Favor de confirmar antes del 13 de marzo</p>
+            </div>
+        </div>
+
+        <footer class="mt-16 reveal text-center" style="transition-delay: 2s;">
+            <div class="formula-container opacity-50 scale-75">
+                $$\oint (L + A) d\tau = \pi \cdot \infty$$
+            </div>
+            <p class="text-[10px] tracking-[0.6em] text-gray-400 uppercase font-serif">14 • 03 • 2026</p>
+        </footer>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        function revealInvitation() {
+            document.getElementById('intro-overlay').classList.add('hidden');
+            document.body.classList.add('active');
+            startFallingPetals();
+        }
+
+        function startFallingPetals() {
+            const container = document.getElementById('petal-container');
+            function createPetal() {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                const size = Math.random() * 15 + 12;
+                petal.style.width = size + 'px';
+                petal.style.height = (size * 0.8) + 'px';
+                petal.style.left = Math.random() * 100 + 'vw';
+                const duration = Math.random() * 5 + 8;
+                petal.style.animationDuration = duration + 's';
+                container.appendChild(petal);
+                setTimeout(() => petal.remove(), (duration + 1) * 1000);
+            }
+            setInterval(createPetal, 450);
+            for(let i=0; i<15; i++) setTimeout(createPetal, i*120);
+        }
+
+        const weddingDate = new Date('March 14, 2026 12:30:00').getTime();
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const diff = weddingDate - now;
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            const ids = ['days', 'hours', 'mins', 'secs'];
+            const vals = [d, h, m, s];
+            ids.forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = Math.max(0, vals[i]).toString().padStart(2, '0');
+            });
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>
+
