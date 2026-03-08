@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boda Leslie & Alejandro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- MathJax for high quality LaTeX rendering -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         :root {
             --ivory-bg: #EAE4D3; 
             --ivory-card: #FDFBF7;
-            --gold: #C5A059;
-            --gold-deep: #A67C37;
-            --text-dark: #3a352f;
-            --petal-outline: #A3937C; /* Color del contorno de los pétalos */
+            --gold-light: #F1E2C3;
+            --gold-main: #C5A059;
+            --gold-dark: #8E6D31;
+            --text-dark: #3D3935;
         }
 
         body, html {
@@ -24,14 +23,17 @@
             padding: 0;
             background-color: var(--ivory-bg);
             color: var(--text-dark);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Playfair Display', serif;
             overflow-x: hidden;
         }
 
-        .font-serif { font-family: 'Cinzel', serif; }
-        .font-script { font-family: 'Great+Vibes', cursive; }
+        .font-script { 
+            font-family: 'Great Vibes', cursive; 
+            color: var(--gold-main);
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+        }
 
-        /* Cover Screen */
+        /* Pantalla de Apertura */
         #intro-overlay {
             position: fixed;
             inset: 0;
@@ -46,7 +48,7 @@
 
         #intro-overlay.hidden { transform: translateY(-100%); }
 
-        /* Interactive Petal Canvas */
+        /* Canvas Pétalos Interactivos */
         #petal-canvas {
             position: fixed;
             inset: 0;
@@ -54,15 +56,41 @@
             z-index: 500;
         }
 
-        /* Gold Rings Styling */
-        .gold-ring {
-            fill: none;
-            stroke: url(#ringGrad);
-            stroke-width: 5;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        /* Grecas "Gariboleadas" */
+        .greca-container {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 140px;
+            display: flex;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .greca-top { top: 10px; }
+        .greca-bottom { bottom: 10px; transform: scaleY(-1); }
+        .greca-svg { height: 100%; width: 100%; max-width: 500px; }
+
+        /* Líneas divisorias Premium */
+        .divider-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .divider-line {
+            height: 1px;
+            flex-grow: 1;
+            background: linear-gradient(to right, transparent, var(--gold-main), transparent);
+        }
+        .divider-icon {
+            color: var(--gold-main);
+            font-size: 1rem;
+            filter: drop-shadow(0 0 2px rgba(197, 160, 89, 0.3));
         }
 
-        /* Infinity Symbol with Continuous Flow */
+        /* Símbolo de Infinito con Movimiento Perpetuo */
         .infinity-path {
             stroke-dasharray: 1000;
             stroke-dashoffset: 1000;
@@ -74,46 +102,60 @@
             100% { stroke-dashoffset: 0; }
         }
 
-        /* Scroll Reveal Animations */
+        /* Anillos Dorados Superiores */
+        .gold-ring {
+            fill: none;
+            stroke: url(#ringGrad);
+            stroke-width: 5;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        }
+
+        /* Revelación */
         .reveal { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
         .active .reveal { opacity: 1; transform: translateY(0); }
 
         .card-body {
             background-color: var(--ivory-card);
-            border: 1px solid var(--gold);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
             position: relative;
             z-index: 10;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), inset 0 0 80px rgba(197, 160, 89, 0.05);
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            padding: 140px 20px;
         }
 
         .btn-action {
-            padding: 0.8rem 2rem;
-            border: 1px solid var(--gold);
-            color: var(--gold);
+            border: 1px solid var(--gold-main);
+            padding: 12px 30px;
+            color: var(--gold-dark);
             text-transform: uppercase;
             letter-spacing: 3px;
             font-size: 0.7rem;
-            transition: all 0.4s;
-            background: transparent;
-            cursor: pointer;
+            transition: all 0.4s ease;
             display: inline-block;
-            border-radius: 4px;
+            background: transparent;
+            font-weight: 600;
+            cursor: pointer;
         }
 
-        .btn-action:hover { background: var(--gold); color: white; transform: scale(1.02); }
+        .btn-action:hover {
+            background: var(--gold-main);
+            color: white;
+            box-shadow: 0 5px 15px rgba(197, 160, 89, 0.3);
+            transform: translateY(-2px);
+        }
 
         .formula-container {
             font-size: clamp(1rem, 5vw, 1.8rem); 
-            color: var(--gold-deep);
-            margin: 2rem 0;
-            width: 100%;
+            color: var(--gold-dark);
+            margin: 1.5rem 0;
             display: flex;
             justify-content: center;
         }
 
-        /* Pulsing Heart Animation */
         .heart-main {
-            color: var(--gold);
+            color: var(--gold-main);
             animation: softPulse 2s infinite ease-in-out;
         }
 
@@ -130,30 +172,51 @@
     <div id="intro-overlay">
         <div class="text-center px-6">
             <div class="flex justify-center mb-8">
-                <i data-lucide="heart" class="heart-main" size="110" stroke-width="1.2"></i>
+                <i data-lucide="heart" class="heart-main" size="120" stroke-width="1"></i>
             </div>
-            <p class="font-serif text-[10px] tracking-[0.5em] mb-4 text-gray-400 uppercase">Nuestra historia es para siempre</p>
-            <h2 class="font-script text-7xl md:text-9xl text-[var(--text-dark)] mb-10">Leslie & Alejandro</h2>
-            <button onclick="revealInvitation()" class="btn-action font-serif">Abrir Invitación</button>
+            <p class="uppercase tracking-[5px] text-[0.65rem] font-bold opacity-60 mb-4">Nuestra historia es para siempre</p>
+            <h2 class="font-script text-7xl md:text-9xl mb-10">Leslie & Alejandro</h2>
+            <button onclick="revealInvitation()" class="btn-action">Abrir Invitación</button>
         </div>
     </div>
 
-    <!-- CANVAS PARA PÉTALOS INTERACTIVOS -->
+    <!-- PÉTALOS INTERACTIVOS -->
     <canvas id="petal-canvas"></canvas>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <main id="main-content" class="max-w-2xl w-full px-4 py-16 text-center">
+    <!-- CONTENIDO -->
+    <main id="main-content" class="w-full px-4 py-16 text-center">
         
-        <div class="card-body p-6 md:p-16 rounded-sm">
+        <div class="card-body rounded-sm">
             
-            <!-- Anillos Dorados Superiores -->
-            <div class="mb-10 reveal" style="transition-delay: 0.2s;">
+            <!-- Greca Superior Gariboleada (Sin anillos internos) -->
+            <div class="greca-container greca-top">
+                <svg class="greca-svg" viewBox="0 0 500 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="goldGradText" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--gold-light)" />
+                            <stop offset="50%" style="stop-color:var(--gold-main)" />
+                            <stop offset="100%" style="stop-color:var(--gold-dark)" />
+                        </linearGradient>
+                    </defs>
+                    <g stroke="url(#goldGradText)" stroke-width="1.2" opacity="0.8">
+                        <path d="M250,65 C250,90 200,110 120,80 C80,60 100,20 140,40 C170,60 210,65 250,65 Z" />
+                        <path d="M250,65 C250,90 300,110 380,80 C420,60 400,20 360,40 C330,60 290,65 250,65 Z" />
+                        <path d="M80,110 Q140,30 210,75 T250,45" />
+                        <path d="M420,110 Q360,30 290,75 T250,45" />
+                        <circle cx="125" cy="80" r="2" fill="url(#goldGradText)" stroke="none"/>
+                        <circle cx="375" cy="80" r="2" fill="url(#goldGradText)" stroke="none"/>
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Anillos Dorados Superiores (Los originales que te gustaron) -->
+            <div class="mb-4 reveal" style="transition-delay: 0.2s;">
                 <svg width="120" height="70" viewBox="0 0 120 70" class="mx-auto">
                     <defs>
                         <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" style="stop-color:#F9F1D0" />
-                            <stop offset="50%" style="stop-color:#C5A059" />
-                            <stop offset="100%" style="stop-color:#8B6D3F" />
+                            <stop offset="50%" style="stop-color:var(--gold-main)" />
+                            <stop offset="100%" style="stop-color:var(--gold-dark)" />
                         </linearGradient>
                     </defs>
                     <circle class="gold-ring" cx="42" cy="35" r="28" />
@@ -161,16 +224,16 @@
                 </svg>
             </div>
 
-            <!-- Símbolo de Infinito -->
-            <div class="relative py-20 mb-4">
-                <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-40" viewBox="0 0 400 240" fill="none">
-                    <path d="M200,120 C140,50 40,50 40,120 C40,190 140,190 200,120 C260,50 360,50 360,120 C360,190 260,190 200,120" stroke="var(--gold)" stroke-width="1" opacity="0.3" />
-                    <path class="infinity-path" d="M200,120 C140,50 40,50 40,120 C40,190 140,190 200,120 C260,50 360,50 360,120 C360,190 260,190 200,120" stroke="var(--gold)" stroke-width="2" />
+            <!-- Nombres con Efecto y Símbolo de Infinito -->
+            <div class="relative py-12 mb-4">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-30" viewBox="0 0 400 240" fill="none">
+                    <path d="M200,120 C140,50 40,50 40,120 C40,190 140,190 200,120 C260,50 360,50 360,120 C360,190 260,190 200,120" stroke="var(--gold-main)" stroke-width="1" opacity="0.3" />
+                    <path class="infinity-path" d="M200,120 C140,50 40,50 40,120 C40,190 140,190 200,120 C260,50 360,50 360,120 C360,190 260,190 200,120" stroke="var(--gold-main)" stroke-width="2.5" />
                 </svg>
                 
                 <div class="relative z-10 reveal" style="transition-delay: 0.4s;">
-                    <p class="font-script text-3xl text-[var(--gold-deep)] mb-4 italic">Nuestro matrimonio</p>
-                    <h1 class="font-script text-7xl md:text-9xl text-[var(--text-dark)] leading-tight">Leslie & Alejandro</h1>
+                    <p class="uppercase tracking-[4px] text-[0.65rem] font-bold opacity-60 mb-2">Nuestro matrimonio</p>
+                    <h1 class="font-script text-7xl md:text-8xl">Leslie & Alejandro</h1>
                 </div>
             </div>
 
@@ -179,76 +242,102 @@
                 $$\oint (L + A) d\tau = \pi \cdot \infty$$
             </div>
 
-            <div class="mb-14 reveal italic text-gray-400 font-serif text-base px-6" style="transition-delay: 0.8s;">
+            <!-- Divisor Premium 1 -->
+            <div class="divider-container reveal">
+                <div class="divider-line"></div>
+                <span class="divider-icon">✧</span>
+                <div class="divider-line"></div>
+            </div>
+
+            <div class="mb-10 reveal italic text-gray-500 text-lg px-6">
                 <p>"Dos almas integradas en una sola historia infinita."</p>
             </div>
 
-            <!-- Fecha del Evento -->
-            <div class="mb-16 reveal" style="transition-delay: 1s;">
-                <div class="h-px w-24 bg-[var(--gold)] mx-auto mb-8 opacity-40"></div>
-                <p class="font-serif text-2xl md:text-3xl tracking-[0.4em] uppercase mb-2">Sábado 14 de Marzo</p>
-                <p class="font-serif text-lg tracking-[0.2em] text-gray-400">Dos mil veintiséis</p>
-            </div>
-
-            <!-- Sección Ceremonia -->
-            <section class="mb-16 reveal" style="transition-delay: 1.2s;">
-                <h3 class="font-script text-5xl text-[var(--gold-deep)] mb-6">Ceremonia Civil</h3>
-                <div class="space-y-3 mb-8 text-gray-600">
-                    <p class="font-bold uppercase tracking-widest text-[var(--text-dark)]">Juzgado 20 del Registro Civil</p>
+            <!-- Ceremonia -->
+            <section class="mb-10 reveal">
+                <h3 class="uppercase tracking-[4px] text-[0.85rem] font-bold mb-4">Ceremonia Civil</h3>
+                <p class="text-2xl font-medium mb-1">Sábado 14 de Marzo 2026</p>
+                <p class="font-script text-4xl mb-4">12:30 Horas</p>
+                <div class="text-sm leading-relaxed opacity-80 mb-6">
+                    <p>Juzgado 20º del Registro Civil CDMX</p>
                     <p>Jardín Plaza Hidalgo 1, Coyoacán, CDMX</p>
-                    <p class="font-serif text-3xl mt-4 text-[var(--text-dark)]">12:30 PM</p>
                 </div>
-                <a href="https://www.google.com/maps/search/?api=1&query=Juzgado+20+del+Registro+Civil+Jardin+Plaza+Hidalgo+1+Coyoacan" target="_blank" class="btn-action font-serif">
-                    <i data-lucide="map-pin" class="inline-block mr-2" size="14"></i> Ubicación Ceremonia
+                <a href="https://www.google.com/maps/search/?api=1&query=Juzgado+20+del+Registro+Civil+Jardin+Plaza+Hidalgo+1+Coyoacan" target="_blank" class="btn-action">
+                    Ubicación Ceremonia
                 </a>
             </section>
 
-            <!-- Sección Recepción -->
-            <section class="mb-20 reveal" style="transition-delay: 1.4s;">
-                <h3 class="font-script text-5xl text-[var(--gold-deep)] mb-6">Recepción</h3>
-                <div class="space-y-3 mb-8 text-gray-600">
-                    <p class="font-bold uppercase tracking-widest text-sm text-[var(--text-dark)]">Paseos de los Granados 110 int 202</p>
+            <!-- Divisor Premium 2 -->
+            <div class="divider-container reveal">
+                <div class="divider-line"></div>
+                <span class="divider-icon">✧</span>
+                <div class="divider-line"></div>
+            </div>
+
+            <!-- Recepción -->
+            <section class="mb-10 reveal">
+                <h3 class="uppercase tracking-[4px] text-[0.85rem] font-bold mb-4">Recepción</h3>
+                <p class="font-script text-4xl mb-4">15:00 Horas</p>
+                <div class="text-sm leading-relaxed opacity-80 mb-6">
+                    <p>Paseos de los Granados 110 int 202</p>
                     <p>Paseos de Taxqueña, Coyoacán, 04250</p>
-                    <p class="font-serif text-3xl mt-4 text-[var(--gold-deep)]">15:00 Horas</p>
                 </div>
-                <a href="https://www.google.com/maps/search/?api=1&query=Paseos+de+los+Granados+110+Paseos+de+Taxqueña+Coyoacán+04250" target="_blank" class="btn-action font-serif">
-                    <i data-lucide="navigation" class="inline-block mr-2" size="14"></i> Ubicación Recepción
+                <a href="https://www.google.com/maps/search/?api=1&query=Paseos+de+los+Granados+110+Paseos+de+Taxqueña+Coyoacán+04250" target="_blank" class="btn-action">
+                    Ubicación Recepción
                 </a>
             </section>
 
-            <!-- Contador Regresivo -->
-            <div class="mb-16 reveal" style="transition-delay: 1.6s;">
-                <div id="countdown" class="flex justify-center gap-6 md:gap-10 font-serif text-[var(--gold-deep)]">
-                    <div class="flex flex-col"><span id="days" class="text-3xl">00</span><span class="text-[9px] uppercase tracking-widest mt-2">Días</span></div>
-                    <div class="flex flex-col"><span id="hours" class="text-3xl">00</span><span class="text-[9px] uppercase tracking-widest mt-2">Hrs</span></div>
-                    <div class="flex flex-col"><span id="mins" class="text-3xl">00</span><span class="text-[9px] uppercase tracking-widest mt-2">Min</span></div>
-                    <div class="flex flex-col"><span id="secs" class="text-3xl">00</span><span class="text-[9px] uppercase tracking-widest mt-2">Seg</span></div>
+            <!-- Divisor Premium 3 -->
+            <div class="divider-container reveal">
+                <div class="divider-line"></div>
+                <span class="divider-icon">✧</span>
+                <div class="divider-line"></div>
+            </div>
+
+            <!-- Contador -->
+            <div class="mb-10 reveal">
+                <div id="countdown" class="flex justify-center gap-6 font-serif">
+                    <div class="flex flex-col"><span id="days" class="text-3xl text-[var(--gold-main)]">00</span><span class="text-[9px] uppercase tracking-widest mt-1">Días</span></div>
+                    <div class="flex flex-col"><span id="hours" class="text-3xl text-[var(--gold-main)]">00</span><span class="text-[9px] uppercase tracking-widest mt-1">Hrs</span></div>
+                    <div class="flex flex-col"><span id="mins" class="text-3xl text-[var(--gold-main)]">00</span><span class="text-[9px] uppercase tracking-widest mt-1">Min</span></div>
+                    <div class="flex flex-col"><span id="secs" class="text-3xl text-[var(--gold-main)]">00</span><span class="text-[9px] uppercase tracking-widest mt-1">Seg</span></div>
                 </div>
             </div>
 
-            <!-- Botón RSVP WhatsApp -->
-            <div class="reveal pb-8" style="transition-delay: 1.8s;">
+            <!-- Confirmación -->
+            <div class="reveal pb-12">
+                <p class="text-xs italic opacity-60 mb-4 tracking-wider">Favor de confirmar antes del 13 de marzo</p>
                 <a href="https://wa.me/525617957682?text=¡Hola!%20Confirmamos%20nuestra%20asistencia%20a%20la%20boda%20de%20Leslie%20y%20Alejandro." 
-                   target="_blank"
-                   class="inline-block px-12 py-4 bg-[var(--gold)] text-white rounded-full font-serif uppercase text-[10px] tracking-[0.4em] shadow-xl hover:bg-[var(--gold-deep)] transition-all transform hover:scale-105">
+                   target="_blank" class="btn-action">
                     Confirmar por WhatsApp
                 </a>
-                <p class="mt-8 text-[11px] text-gray-400 font-medium italic">Favor de confirmar antes del 13 de marzo</p>
+            </div>
+
+            <!-- Greca Inferior Gariboleada -->
+            <div class="greca-container greca-bottom">
+                <svg class="greca-svg" viewBox="0 0 500 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g stroke="url(#goldGradText)" stroke-width="1.2" opacity="0.8">
+                        <path d="M250,65 C250,90 200,110 120,80 C80,60 100,20 140,40 C170,60 210,65 250,65 Z" />
+                        <path d="M250,65 C250,90 300,110 380,80 C420,60 400,20 360,40 C330,60 290,65 250,65 Z" />
+                        <path d="M80,110 Q140,30 210,75 T250,45" />
+                        <path d="M420,110 Q360,30 290,75 T250,45" />
+                    </g>
+                </svg>
             </div>
         </div>
 
-        <footer class="mt-16 reveal text-center" style="transition-delay: 2s;">
-            <div class="formula-container opacity-50 scale-75">
+        <footer class="mt-16 reveal text-center opacity-40">
+            <div class="scale-75 mb-2">
                 $$\oint (L + A) d\tau = \pi \cdot \infty$$
             </div>
-            <p class="text-[10px] tracking-[0.6em] text-gray-400 uppercase font-serif">14 • 03 • 2026</p>
+            <p class="text-[10px] tracking-[5px] uppercase">14 • 03 • 2026</p>
         </footer>
     </main>
 
     <script>
         lucide.createIcons();
 
-        // --- INTERACTIVE PETAL SYSTEM ---
+        // --- SISTEMA DE PÉTALOS INTERACTIVOS (CANVAS) ---
         const canvas = document.getElementById('petal-canvas');
         const ctx = canvas.getContext('2d');
         let petals = [];
@@ -260,7 +349,6 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
-
         window.addEventListener('resize', resize);
         resize();
 
@@ -270,7 +358,6 @@
             mouse.x = clientX;
             mouse.y = clientY;
         };
-
         window.addEventListener('mousemove', handleInteraction);
         window.addEventListener('touchmove', handleInteraction);
         window.addEventListener('scroll', () => {
@@ -279,10 +366,7 @@
         });
 
         class Petal {
-            constructor() {
-                this.init();
-            }
-
+            constructor() { this.init(); }
             init() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height - canvas.height;
@@ -293,58 +377,41 @@
                 this.rotationSpeed = Math.random() * 2 - 1;
                 this.opacity = Math.random() * 0.4 + 0.5;
             }
-
             update() {
                 this.y += this.speedY + (scrollVelocity * 0.05);
                 this.x += this.speedX + Math.sin(this.y / 50);
-
                 const dx = this.x - mouse.x;
                 const dy = this.y - mouse.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                const maxDist = 130;
-
-                if (distance < maxDist) {
-                    const force = (maxDist - distance) / maxDist;
+                if (distance < 130) {
+                    const force = (130 - distance) / 130;
                     this.x += (dx / distance) * force * 12;
                     this.y += (dy / distance) * force * 12;
                 }
-
                 this.rotation += this.rotationSpeed;
-
-                if (this.y > canvas.height + 20) {
-                    this.init();
-                }
+                if (this.y > canvas.height + 20) this.init();
             }
-
             draw() {
                 ctx.save();
                 ctx.translate(this.x, this.y);
                 ctx.rotate((this.rotation * Math.PI) / 180);
                 ctx.globalAlpha = this.opacity;
-                
-                // Draw Petal Shape
                 ctx.beginPath();
                 ctx.fillStyle = "#FFFFFF";
-                // Color del contorno (oscuro pero estético)
-                ctx.strokeStyle = "rgba(163, 147, 124, 0.6)"; 
+                ctx.strokeStyle = "rgba(163, 147, 124, 0.4)"; 
                 ctx.lineWidth = 1;
-
                 ctx.moveTo(0, 0);
                 ctx.bezierCurveTo(this.size, -this.size, this.size, this.size, 0, this.size);
                 ctx.bezierCurveTo(-this.size, this.size, -this.size, -this.size, 0, 0);
-                
                 ctx.fill();
-                ctx.stroke(); // Dibujar el contorno
+                ctx.stroke();
                 ctx.restore();
             }
         }
 
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            petals.forEach(p => {
-                p.update();
-                p.draw();
-            });
+            petals.forEach(p => { p.update(); p.draw(); });
             scrollVelocity *= 0.92;
             requestAnimationFrame(animate);
         }
@@ -352,26 +419,19 @@
         function revealInvitation() {
             document.getElementById('intro-overlay').classList.add('hidden');
             document.body.classList.add('active');
-            
-            // Generate petals on open
-            for (let i = 0; i < 45; i++) {
-                petals.push(new Petal());
-            }
+            for (let i = 0; i < 45; i++) petals.push(new Petal());
             animate();
-            
-            // Check scroll reveal on load
             revealOnScroll();
         }
 
-        const weddingDate = new Date('March 14, 2026 12:30:00').getTime();
         function updateTimer() {
+            const weddingDate = new Date('March 14, 2026 12:30:00').getTime();
             const now = new Date().getTime();
             const diff = weddingDate - now;
             const d = Math.floor(diff / (1000 * 60 * 60 * 24));
             const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const s = Math.floor((diff % (1000 * 60)) / 1000);
-            
             const ids = ['days', 'hours', 'mins', 'secs'];
             const vals = [d, h, m, s];
             ids.forEach((id, i) => {
@@ -387,9 +447,7 @@
             for (var i = 0; i < reveals.length; i++) {
                 var windowHeight = window.innerHeight;
                 var elementTop = reveals[i].getBoundingClientRect().top;
-                if (elementTop < windowHeight - 100) {
-                    reveals[i].classList.add("active");
-                }
+                if (elementTop < windowHeight - 100) reveals[i].classList.add("active");
             }
         }
         window.addEventListener("scroll", revealOnScroll);
@@ -397,4 +455,3 @@
 </body>
 </html>
 
-    
