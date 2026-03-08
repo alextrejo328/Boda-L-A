@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- MathJax para renderizado de fórmulas LaTeX -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         :root {
@@ -26,6 +25,7 @@
             color: var(--text-dark);
             font-family: 'Playfair Display', serif;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .font-script { 
@@ -44,7 +44,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+            transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1);
+            will-change: transform;
         }
 
         #intro-overlay.hidden { transform: translateY(-100%); }
@@ -60,25 +61,23 @@
         /* Botón de Música Flotante */
         #music-control {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 25px;
+            right: 25px;
             z-index: 600;
-            background: rgba(253, 251, 247, 0.8);
+            background: rgba(253, 251, 247, 0.9);
             border: 1px solid var(--gold-main);
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            display: none; /* Se muestra tras abrir invitación */
+            display: none;
             align-items: center;
             justify-content: center;
             color: var(--gold-dark);
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        #music-control:hover { transform: scale(1.1); background: var(--ivory-card); }
 
-        /* Grecas "Gariboleadas" */
+        /* Grecas */
         .greca-container {
             position: absolute;
             left: 0;
@@ -93,7 +92,7 @@
         .greca-bottom { bottom: 10px; transform: scaleY(-1); }
         .greca-svg { height: 100%; width: 100%; max-width: 500px; }
 
-        /* Líneas divisorias Premium */
+        /* Divisores */
         .divider-container {
             display: flex;
             align-items: center;
@@ -106,11 +105,7 @@
             flex-grow: 1;
             background: linear-gradient(to right, transparent, var(--gold-main), transparent);
         }
-        .divider-icon {
-            color: var(--gold-main);
-            font-size: 1rem;
-            filter: drop-shadow(0 0 2px rgba(197, 160, 89, 0.3));
-        }
+        .divider-icon { color: var(--gold-main); font-size: 1rem; }
 
         /* Infinito Perpetuo */
         .infinity-path {
@@ -127,10 +122,10 @@
             fill: none;
             stroke: url(#ringGrad);
             stroke-width: 5;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
         }
 
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
+        .reveal { opacity: 0; transform: translateY(20px); transition: all 0.8s ease-out; }
         .active .reveal { opacity: 1; transform: translateY(0); }
 
         .card-body {
@@ -139,33 +134,26 @@
             margin: 0 auto;
             position: relative;
             z-index: 10;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15), inset 0 0 80px rgba(197, 160, 89, 0.05);
-            border: 1px solid rgba(197, 160, 89, 0.2);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1), inset 0 0 80px rgba(197, 160, 89, 0.03);
+            border: 1px solid rgba(197, 160, 89, 0.15);
             padding: 40px 20px 140px;
         }
 
         .btn-action {
-            border: 1px solid var(--gold-main);
+            border: 1.5px solid var(--gold-main);
             padding: 12px 30px;
             color: var(--gold-dark);
             text-transform: uppercase;
             letter-spacing: 3px;
-            font-size: 0.7rem;
-            transition: all 0.4s ease;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
             display: inline-block;
             background: transparent;
             font-weight: 600;
-            cursor: pointer;
-        }
-        .btn-action:hover {
-            background: var(--gold-main);
-            color: white;
-            box-shadow: 0 5px 15px rgba(197, 160, 89, 0.3);
-            transform: translateY(-2px);
         }
 
         .formula-container {
-            font-size: clamp(1rem, 5vw, 1.8rem); 
+            font-size: clamp(1rem, 5.5vw, 1.8rem); 
             color: var(--gold-dark);
             margin: 0.5rem 0 2rem; 
             display: flex;
@@ -177,31 +165,29 @@
             animation: softPulse 2s infinite ease-in-out;
         }
         @keyframes softPulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.25); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 1; }
         }
     </style>
 </head>
 <body class="flex flex-col items-center">
 
-    <!-- AUDIO ELEMENT -->
-    <audio id="bg-music" loop>
+    <!-- AUDIO CON MANEJO DE ERROR -->
+    <audio id="bg-music" loop preload="auto">
         <source src="https://dn721404.ca.archive.org/0/items/tvtunes_25546/Howls%20Moving%20Castle.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- BOTÓN DE MÚSICA FLOTANTE -->
     <div id="music-control" onclick="toggleMusic()">
         <i id="music-icon" data-lucide="music"></i>
     </div>
 
-    <!-- COVER DIGITAL -->
+    <!-- COVER -->
     <div id="intro-overlay">
         <div class="text-center px-6">
             <div class="flex justify-center mb-8">
-                <i data-lucide="heart" class="heart-main" size="120" stroke-width="1"></i>
+                <i data-lucide="heart" class="heart-main" size="100" stroke-width="1"></i>
             </div>
-            <p class="uppercase tracking-[5px] text-[0.65rem] font-bold opacity-60 mb-4">Nuestra historia es para siempre</p>
+            <p class="uppercase tracking-[5px] text-[0.65rem] font-bold opacity-60 mb-4">Unidos por siempre</p>
             <h2 class="font-script text-7xl md:text-9xl text-[var(--gold-main)] mb-10">Leslie & Alejandro</h2>
             <button onclick="revealInvitation()" class="btn-action">Abrir Invitación</button>
         </div>
@@ -210,12 +196,11 @@
     <!-- PÉTALOS INTERACTIVOS -->
     <canvas id="petal-canvas"></canvas>
 
-    <!-- CONTENIDO PRINCIPAL -->
+    <!-- CONTENIDO -->
     <main id="main-content" class="w-full px-4 py-16 text-center">
-        
         <div class="card-body rounded-sm">
             
-            <!-- Anillos Dorados -->
+            <!-- Anillos Arriba de Greca -->
             <div class="mt-8 mb-2 reveal" style="transition-delay: 0.2s; position: relative; z-index: 10;">
                 <svg width="120" height="70" viewBox="0 0 120 70" class="mx-auto">
                     <defs>
@@ -230,9 +215,8 @@
                 </svg>
             </div>
 
-            <!-- Greca Superior -->
             <div class="greca-container greca-top">
-                <svg class="greca-svg" viewBox="0 0 500 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg class="greca-svg" viewBox="0 0 500 150" fill="none">
                     <defs>
                         <linearGradient id="goldGradText" x1="0%" y1="0%" x2="0%" y2="100%">
                             <stop offset="0%" style="stop-color:var(--gold-light)" />
@@ -257,91 +241,56 @@
                     <path d="M200,120 C140,50 40,50 40,120 C40,190 140,190 200,120 C260,50 360,50 360,120 C360,190 260,190 200,120" stroke="var(--gold-main)" stroke-width="1" opacity="0.3" />
                     <path class="infinity-path" d="M200,120 C140,50 40,50 40,120 C40,190 140,190 200,120 C260,50 360,50 360,120 C360,190 260,190 200,120" stroke="var(--gold-main)" stroke-width="2.5" />
                 </svg>
-                <div class="relative z-10 reveal w-full" style="transition-delay: 0.4s;">
+                <div class="relative z-10 reveal w-full" style="transition-delay: 0.3s;">
                     <p class="uppercase tracking-[4px] text-[0.65rem] font-bold opacity-60 mb-2">Nuestro matrimonio</p>
                     <h1 class="font-script text-7xl md:text-8xl leading-tight">Leslie & Alejandro</h1>
                 </div>
             </div>
 
-            <!-- Fórmula Matemática -->
-            <div class="formula-container reveal" style="transition-delay: 0.6s;">
+            <div class="formula-container reveal" style="transition-delay: 0.4s;">
                 $$\oint (L + A) d\tau = \pi \cdot \infty$$
             </div>
 
-            <!-- Divisor 1 -->
-            <div class="divider-container reveal">
-                <div class="divider-line"></div>
-                <span class="divider-icon">✧</span>
-                <div class="divider-line"></div>
-            </div>
+            <div class="divider-container reveal"><div class="divider-line"></div><span class="divider-icon">✧</span><div class="divider-line"></div></div>
 
-            <div class="mb-10 reveal italic text-gray-500 text-lg px-6">
-                <p>"Dos almas integradas en una sola historia infinita."</p>
-            </div>
+            <div class="mb-10 reveal italic text-gray-500 text-lg px-6"><p>"Dos almas integradas en una sola historia infinita."</p></div>
 
-            <!-- Ceremonia -->
+            <!-- Secciones de Información -->
             <section class="mb-10 reveal">
                 <h3 class="uppercase tracking-[4px] text-[0.85rem] font-bold mb-4">Ceremonia Civil</h3>
                 <p class="text-2xl font-medium mb-1">Sábado 14 de Marzo 2026</p>
                 <p class="font-script text-4xl mb-4 text-[var(--gold-main)]">12:30 Horas</p>
-                <div class="text-sm leading-relaxed opacity-80 mb-6">
-                    <p>Juzgado 20º del Registro Civil CDMX</p>
-                    <p>Jardín Plaza Hidalgo 1, Coyoacán, CDMX</p>
-                </div>
-                <a href="https://www.google.com/maps/search/?api=1&query=Juzgado+20+del+Registro+Civil+Jardin+Plaza+Hidalgo+1+Coyoacan" target="_blank" class="btn-action">
-                    Ubicación Ceremonia
-                </a>
+                <div class="text-sm opacity-80 mb-6"><p>Juzgado 20º del Registro Civil CDMX</p><p>Jardín Plaza Hidalgo 1, Coyoacán</p></div>
+                <a href="https://www.google.com/maps/search/?api=1&query=Juzgado+20+del+Registro+Civil+Jardin+Plaza+Hidalgo+1+Coyoacan" target="_blank" class="btn-action">Ubicación</a>
             </section>
 
-            <!-- Divisor 2 -->
-            <div class="divider-container reveal">
-                <div class="divider-line"></div>
-                <span class="divider-icon">✧</span>
-                <div class="divider-line"></div>
-            </div>
+            <div class="divider-container reveal"><div class="divider-line"></div><span class="divider-icon">✧</span><div class="divider-line"></div></div>
 
-            <!-- Recepción -->
             <section class="mb-10 reveal">
                 <h3 class="uppercase tracking-[4px] text-[0.85rem] font-bold mb-4">Recepción</h3>
                 <p class="font-script text-4xl mb-4 text-[var(--gold-main)]">15:00 Horas</p>
-                <div class="text-sm leading-relaxed opacity-80 mb-6">
-                    <p>Paseos de los Granados 110 int 202</p>
-                    <p>Paseos de Taxqueña, Coyoacán, 04250</p>
-                </div>
-                <a href="https://www.google.com/maps/search/?api=1&query=Paseos+de+los+Granados+110+Paseos+de+Taxqueña+Coyoacán+04250" target="_blank" class="btn-action">
-                    Ubicación Recepción
-                </a>
+                <div class="text-sm opacity-80 mb-6"><p>Paseos de los Granados 110 int 202</p><p>Paseos de Taxqueña, Coyoacán</p></div>
+                <a href="https://www.google.com/maps/search/?api=1&query=Paseos+de+los+Granados+110+Paseos+de+Taxqueña+Coyoacán+04250" target="_blank" class="btn-action">Llegar</a>
             </section>
 
-            <!-- Divisor 3 -->
-            <div class="divider-container reveal">
-                <div class="divider-line"></div>
-                <span class="divider-icon">✧</span>
-                <div class="divider-line"></div>
-            </div>
+            <div class="divider-container reveal"><div class="divider-line"></div><span class="divider-icon">✧</span><div class="divider-line"></div></div>
 
-            <!-- Contador -->
             <div class="mb-10 reveal">
                 <div id="countdown" class="flex justify-center gap-6 font-serif">
-                    <div class="flex flex-col"><span id="days" class="text-3xl text-[var(--gold-main)]">00</span><span class="text-[9px] uppercase tracking-widest mt-1">Días</span></div>
-                    <div class="flex flex-col"><span id="hours" class="text-3xl text-[var(--gold-main)]">00</span><span class="text-[9px] uppercase tracking-widest mt-1">Hrs</span></div>
-                    <div class="flex flex-col"><span id="mins" class="text-3xl text-[var(--gold-main)]">00</span><span class="text-[9px] uppercase tracking-widest mt-1">Min</span></div>
-                    <div class="flex flex-col"><span id="secs" class="text-3xl text-[var(--gold-main)]">00</span><span class="text-[9px] uppercase tracking-widest mt-1">Seg</span></div>
+                    <div class="flex flex-col"><span id="days" class="text-3xl text-[var(--gold-main)]">00</span><span class="text-[9px] uppercase mt-1">Días</span></div>
+                    <div class="flex flex-col"><span id="hours" class="text-3xl text-[var(--gold-main)]">00</span><span class="text-[9px] uppercase mt-1">Hrs</span></div>
+                    <div class="flex flex-col"><span id="mins" class="text-3xl text-[var(--gold-main)]">00</span><span class="text-[9px] uppercase mt-1">Min</span></div>
+                    <div class="flex flex-col"><span id="secs" class="text-3xl text-[var(--gold-main)]">00</span><span class="text-[9px] uppercase mt-1">Seg</span></div>
                 </div>
             </div>
 
-            <!-- Confirmación -->
             <div class="reveal pb-12">
-                <p class="text-xs italic opacity-60 mb-4 tracking-wider">Favor de confirmar antes del 13 de marzo</p>
-                <a href="https://wa.me/525617957682?text=¡Hola!%20Confirmamos%20nuestra%20asistencia%20a%20la%20boda%20de%20Leslie%20y%20Alejandro." 
-                   target="_blank" class="btn-action">
-                    Confirmar por WhatsApp
-                </a>
+                <p class="text-xs italic opacity-60 mb-4">Favor de confirmar antes del 13 de marzo</p>
+                <a href="https://wa.me/525617957682?text=¡Hola!%20Confirmamos%20nuestra%20asistencia%20a%20la%20boda%20de%20Leslie%20y%20Alejandro." target="_blank" class="btn-action">WhatsApp</a>
             </div>
 
-            <!-- Greca Inferior -->
             <div class="greca-container greca-bottom">
-                <svg class="greca-svg" viewBox="0 0 500 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg class="greca-svg" viewBox="0 0 500 150" fill="none">
                     <g stroke="url(#goldGradText)" stroke-width="1.2" opacity="0.6">
                         <path d="M250,65 C250,90 200,110 120,80 C80,60 100,20 140,40 C170,60 210,65 250,65 Z" />
                         <path d="M250,65 C250,90 300,110 380,80 C420,60 400,20 360,40 C330,60 290,65 250,65 Z" />
@@ -351,35 +300,30 @@
                 </svg>
             </div>
         </div>
-
-        <footer class="mt-16 reveal text-center opacity-40">
-            <div class="scale-75 mb-2">
-                $$\oint (L + A) d\tau = \pi \cdot \infty$$
-            </div>
-            <p class="text-[10px] tracking-[5px] uppercase">14 • 03 • 2026</p>
-        </footer>
     </main>
 
     <script>
         lucide.createIcons();
 
-        // --- LÓGICA DE AUDIO ---
         const bgMusic = document.getElementById('bg-music');
         const musicBtn = document.getElementById('music-control');
         const musicIcon = document.getElementById('music-icon');
 
-        function toggleMusic() {
-            if (bgMusic.paused) {
-                bgMusic.play();
-                musicIcon.setAttribute('data-lucide', 'pause');
-            } else {
-                bgMusic.pause();
-                musicIcon.setAttribute('data-lucide', 'play');
+        async function toggleMusic() {
+            try {
+                if (bgMusic.paused) {
+                    await bgMusic.play();
+                    musicIcon.setAttribute('data-lucide', 'pause');
+                } else {
+                    bgMusic.pause();
+                    musicIcon.setAttribute('data-lucide', 'play');
+                }
+                lucide.createIcons();
+            } catch (err) {
+                console.log("Error al reproducir audio:", err);
             }
-            lucide.createIcons();
         }
 
-        // --- SISTEMA DE PÉTALOS INTERACTIVOS ---
         const canvas = document.getElementById('petal-canvas');
         const ctx = canvas.getContext('2d');
         let petals = [];
@@ -393,19 +337,6 @@
         }
         window.addEventListener('resize', resize);
         resize();
-
-        const handleInteraction = (e) => {
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            mouse.x = clientX;
-            mouse.y = clientY;
-        };
-        window.addEventListener('mousemove', handleInteraction);
-        window.addEventListener('touchmove', handleInteraction);
-        window.addEventListener('scroll', () => {
-            scrollVelocity = window.scrollY - lastScrollY;
-            lastScrollY = window.scrollY;
-        });
 
         class Petal {
             constructor() { this.init(); }
@@ -424,11 +355,11 @@
                 this.x += this.speedX + Math.sin(this.y / 50);
                 const dx = this.x - mouse.x;
                 const dy = this.y - mouse.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 130) {
-                    const force = (130 - distance) / 130;
-                    this.x += (dx / distance) * force * 12;
-                    this.y += (dy / distance) * force * 12;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 130) {
+                    const f = (130 - dist) / 130;
+                    this.x += (dx / dist) * f * 10;
+                    this.y += (dy / dist) * f * 10;
                 }
                 this.rotation += this.rotationSpeed;
                 if (this.y > canvas.height + 20) this.init();
@@ -440,7 +371,7 @@
                 ctx.globalAlpha = this.opacity;
                 ctx.beginPath();
                 ctx.fillStyle = "#FFFFFF";
-                ctx.strokeStyle = "rgba(163, 147, 124, 0.4)"; 
+                ctx.strokeStyle = "rgba(163, 147, 124, 0.4)";
                 ctx.lineWidth = 1;
                 ctx.moveTo(0, 0);
                 ctx.bezierCurveTo(this.size, -this.size, this.size, this.size, 0, this.size);
@@ -454,17 +385,60 @@
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             petals.forEach(p => { p.update(); p.draw(); });
-            scrollVelocity *= 0.92;
+            scrollVelocity *= 0.9;
             requestAnimationFrame(animate);
         }
 
-        // --- FUNCIÓN PRINCIPAL DE APERTURA ---
         function revealInvitation() {
-            // Ocultar overlay
             document.getElementById('intro-overlay').classList.add('hidden');
-            document.body.classList.add('active');
             
-            // Iniciar Audio (tras interacción del usuario)
-            bgMusic.play();
-            musicBtn.style.display = "flex";
-            musicIcon.s
+            // Iniciar audio con manejo de promesa para Brave
+            bgMusic.play().then(() => {
+                musicBtn.style.display = "flex";
+                musicIcon.setAttribute('data-lucide', 'pause');
+                lucide.createIcons();
+            }).catch(e => {
+                console.warn("Autoplay bloqueado, se requiere interacción extra.");
+                musicBtn.style.display = "flex";
+                musicIcon.setAttribute('data-lucide', 'play');
+                lucide.createIcons();
+            });
+
+            // Iniciar pétalos de forma progresiva
+            setTimeout(() => {
+                for (let i = 0; i < 40; i++) petals.push(new Petal());
+                animate();
+            }, 500);
+
+            revealOnScroll();
+        }
+
+        function updateTimer() {
+            const weddingDate = new Date('March 14, 2026 12:30:00').getTime();
+            const now = new Date().getTime();
+            const diff = weddingDate - now;
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+            document.getElementById('days').innerText = d.toString().padStart(2, '0');
+            document.getElementById('hours').innerText = h.toString().padStart(2, '0');
+            document.getElementById('mins').innerText = m.toString().padStart(2, '0');
+            document.getElementById('secs').innerText = s.toString().padStart(2, '0');
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll(".reveal");
+            reveals.forEach(el => {
+                const top = el.getBoundingClientRect().top;
+                if (top < window.innerHeight - 100) el.classList.add("active");
+            });
+        }
+        window.addEventListener("scroll", revealOnScroll);
+    </script>
+</body>
+</html>
+
+
