@@ -10,8 +10,8 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         :root {
-            --ivory-dark: #E2D9C8; 
-            --ivory-light: #FDFBF7;
+            --ivory-bg: #EAE4D3; 
+            --ivory-card: #FDFBF7;
             --gold: #C5A059;
             --gold-deep: #A67C37;
             --text-dark: #3a352f;
@@ -20,7 +20,7 @@
         body, html {
             margin: 0;
             padding: 0;
-            background-color: var(--ivory-dark);
+            background-color: var(--ivory-bg);
             color: var(--text-dark);
             font-family: 'Montserrat', sans-serif;
             overflow-x: hidden;
@@ -33,7 +33,7 @@
         #intro-overlay {
             position: fixed;
             inset: 0;
-            background-color: var(--ivory-light);
+            background-color: var(--ivory-card);
             z-index: 1000;
             display: flex;
             flex-direction: column;
@@ -76,21 +76,21 @@
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
         }
 
-        /* Greca Artística Animada */
-        .greca-path {
+        /* Símbolo de Infinito Animado */
+        .infinity-path {
             stroke-dasharray: 2000;
             stroke-dashoffset: 2000;
-            transition: stroke-dashoffset 4.5s ease-in-out;
+            transition: stroke-dashoffset 5s ease-in-out;
         }
 
-        .active .greca-path { stroke-dashoffset: 0; }
+        .active .infinity-path { stroke-dashoffset: 0; }
 
-        /* Revelación */
+        /* Revelación de secciones */
         .reveal { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
         .active .reveal { opacity: 1; transform: translateY(0); }
 
         .card-body {
-            background-color: var(--ivory-light);
+            background-color: var(--ivory-card);
             border: 1px solid var(--gold);
             box-shadow: 0 20px 50px rgba(0,0,0,0.1);
             position: relative;
@@ -113,24 +113,15 @@
         .btn-action:hover { background: var(--gold); color: white; transform: scale(1.02); }
 
         .formula-container {
-            font-size: clamp(1rem, 5vw, 1.8rem); 
+            font-size: clamp(1rem, 5.5vw, 1.8rem); 
             color: var(--gold-deep);
             margin: 2rem 0;
             width: 100%;
-            overflow: hidden;
             display: flex;
             justify-content: center;
         }
 
-        /* Estilo Corazón Animado Central */
-        .heart-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-
+        /* Corazón Grande Centrado */
         .heart-main {
             color: var(--gold);
             animation: softPulse 2s infinite ease-in-out;
@@ -138,7 +129,7 @@
 
         @keyframes softPulse {
             0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.15); opacity: 1; }
+            50% { transform: scale(1.25); opacity: 1; }
             100% { transform: scale(1); opacity: 0.8; }
         }
     </style>
@@ -148,12 +139,11 @@
     <!-- COVER DIGITAL -->
     <div id="intro-overlay">
         <div class="text-center px-6">
-            <div class="heart-container mb-8">
-                <!-- Corazón Grande y Centrado -->
-                <i data-lucide="heart" class="heart-main" size="80" stroke-width="1.5"></i>
+            <div class="flex justify-center mb-8">
+                <i data-lucide="heart" class="heart-main" size="100" stroke-width="1"></i>
             </div>
-            <p class="font-serif text-[10px] tracking-[0.5em] mb-4 text-gray-400 uppercase">Nuestra historia comienza</p>
-            <h2 class="font-script text-7xl md:text-9xl text-[var(--text-dark)] mb-8">Leslie & Alejandro</h2>
+            <p class="font-serif text-[10px] tracking-[0.5em] mb-4 text-gray-400 uppercase">Nuestra historia es para siempre</p>
+            <h2 class="font-script text-7xl md:text-9xl text-[var(--text-dark)] mb-10">Leslie & Alejandro</h2>
             <button onclick="revealInvitation()" class="btn-action font-serif">Abrir Invitación</button>
         </div>
     </div>
@@ -181,12 +171,12 @@
                 </svg>
             </div>
 
-            <!-- Greca Artística Refinada -->
-            <div class="relative py-16 mb-4">
-                <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-50" viewBox="0 0 400 220" fill="none">
-                    <path class="greca-path" d="M10,110 C10,40 60,10 200,10 C340,10 390,40 390,110 C390,180 340,210 200,210 C60,210 10,180 10,110 M30,110 C30,70 80,40 200,40 C320,40 370,70 370,110 C370,150 320,180 200,180 C80,180 30,150 30,110" stroke="var(--gold)" stroke-width="1" />
-                    <circle class="reveal" cx="200" cy="10" r="3" fill="var(--gold)" />
-                    <circle class="reveal" cx="200" cy="210" r="3" fill="var(--gold)" />
+            <!-- Símbolo de Infinito y Nombres -->
+            <div class="relative py-20 mb-4">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-40" viewBox="0 0 400 240" fill="none">
+                    <!-- Símbolo de Infinito Estilizado -->
+                    <path class="infinity-path" d="M200,120 C140,50 40,50 40,120 C40,190 140,190 200,120 C260,50 360,50 360,120 C360,190 260,190 200,120" stroke="var(--gold)" stroke-width="1.5" />
+                    <path class="infinity-path" d="M200,120 C155,70 70,70 70,120 C70,170 155,170 200,120 C245,70 330,70 330,120 C330,170 245,170 200,120" stroke="var(--gold)" stroke-width="0.5" style="transition-delay: 0.5s;" />
                 </svg>
                 
                 <div class="relative z-10 reveal" style="transition-delay: 0.4s;">
@@ -315,3 +305,4 @@
 </body>
 </html>
 
+                                                                                                                                                        
