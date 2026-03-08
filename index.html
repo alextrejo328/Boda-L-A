@@ -44,28 +44,12 @@
 
         #intro-overlay.hidden { transform: translateY(-100%); }
 
-        /* Pétalos Blancos Frontales */
-        #petal-container {
+        /* Canvas para Pétalos Interactivos */
+        #petal-canvas {
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 500;
-        }
-
-        .petal {
-            position: absolute;
-            background-color: #FFFFFF;
-            border-radius: 150% 0 150% 0;
-            opacity: 0.95;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-            animation: fall linear infinite;
-        }
-
-        @keyframes fall {
-            0% { transform: translateY(-10vh) rotate(0deg) translateX(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(110vh) rotate(720deg) translateX(120px); opacity: 0; }
         }
 
         /* Anillos Dorados */
@@ -76,16 +60,19 @@
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
         }
 
-        /* Símbolo de Infinito Animado */
+        /* Símbolo de Infinito con Movimiento Continuo */
         .infinity-path {
-            stroke-dasharray: 2000;
-            stroke-dashoffset: 2000;
-            transition: stroke-dashoffset 5s ease-in-out;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: flow-infinity 6s linear infinite;
         }
 
-        .active .infinity-path { stroke-dashoffset: 0; }
+        @keyframes flow-infinity {
+            0% { stroke-dashoffset: 2000; }
+            100% { stroke-dashoffset: 0; }
+        }
 
-        /* Revelación de secciones */
+        /* Revelación */
         .reveal { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
         .active .reveal { opacity: 1; transform: translateY(0); }
 
@@ -94,6 +81,7 @@
             border: 1px solid var(--gold);
             box-shadow: 0 20px 50px rgba(0,0,0,0.1);
             position: relative;
+            z-index: 10;
         }
 
         .btn-action {
@@ -113,7 +101,7 @@
         .btn-action:hover { background: var(--gold); color: white; transform: scale(1.02); }
 
         .formula-container {
-            font-size: clamp(1rem, 5.5vw, 1.8rem); 
+            font-size: clamp(1rem, 5vw, 1.8rem); 
             color: var(--gold-deep);
             margin: 2rem 0;
             width: 100%;
@@ -121,7 +109,7 @@
             justify-content: center;
         }
 
-        /* Corazón Grande Centrado */
+        /* Corazón Grande Centrado en Intro */
         .heart-main {
             color: var(--gold);
             animation: softPulse 2s infinite ease-in-out;
@@ -140,7 +128,7 @@
     <div id="intro-overlay">
         <div class="text-center px-6">
             <div class="flex justify-center mb-8">
-                <i data-lucide="heart" class="heart-main" size="100" stroke-width="1"></i>
+                <i data-lucide="heart" class="heart-main" size="110" stroke-width="1.2"></i>
             </div>
             <p class="font-serif text-[10px] tracking-[0.5em] mb-4 text-gray-400 uppercase">Nuestra historia es para siempre</p>
             <h2 class="font-script text-7xl md:text-9xl text-[var(--text-dark)] mb-10">Leslie & Alejandro</h2>
@@ -148,8 +136,8 @@
         </div>
     </div>
 
-    <!-- PÉTALOS BLANCOS -->
-    <div id="petal-container"></div>
+    <!-- CANVAS PARA PÉTALOS (AL FRENTE E INTERACTIVOS) -->
+    <canvas id="petal-canvas"></canvas>
 
     <!-- CONTENIDO -->
     <main id="main-content" class="max-w-2xl w-full px-4 py-16 text-center">
@@ -171,12 +159,11 @@
                 </svg>
             </div>
 
-            <!-- Símbolo de Infinito y Nombres -->
+            <!-- Símbolo de Infinito con Movimiento Continuo -->
             <div class="relative py-20 mb-4">
                 <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-40" viewBox="0 0 400 240" fill="none">
-                    <!-- Símbolo de Infinito Estilizado -->
-                    <path class="infinity-path" d="M200,120 C140,50 40,50 40,120 C40,190 140,190 200,120 C260,50 360,50 360,120 C360,190 260,190 200,120" stroke="var(--gold)" stroke-width="1.5" />
-                    <path class="infinity-path" d="M200,120 C155,70 70,70 70,120 C70,170 155,170 200,120 C245,70 330,70 330,120 C330,170 245,170 200,120" stroke="var(--gold)" stroke-width="0.5" style="transition-delay: 0.5s;" />
+                    <path d="M200,120 C140,50 40,50 40,120 C40,190 140,190 200,120 C260,50 360,50 360,120 C360,190 260,190 200,120" stroke="var(--gold)" stroke-width="1" opacity="0.3" />
+                    <path class="infinity-path" d="M200,120 C140,50 40,50 40,120 C40,190 140,190 200,120 C260,50 360,50 360,120 C360,190 260,190 200,120" stroke="var(--gold)" stroke-width="2" />
                 </svg>
                 
                 <div class="relative z-10 reveal" style="transition-delay: 0.4s;">
@@ -259,32 +246,120 @@
     <script>
         lucide.createIcons();
 
+        // --- SISTEMA DE PÉTALOS INTERACTIVOS (CANVAS) ---
+        const canvas = document.getElementById('petal-canvas');
+        const ctx = canvas.getContext('2d');
+        let petals = [];
+        let mouse = { x: -1000, y: -1000 };
+        let lastScrollY = window.scrollY;
+        let scrollVelocity = 0;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Capturar toque o ratón para interacción
+        const handleInteraction = (e) => {
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            mouse.x = clientX;
+            mouse.y = clientY;
+        };
+
+        window.addEventListener('mousemove', handleInteraction);
+        window.addEventListener('touchmove', handleInteraction);
+        window.addEventListener('scroll', () => {
+            scrollVelocity = window.scrollY - lastScrollY;
+            lastScrollY = window.scrollY;
+        });
+
+        class Petal {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.size = Math.random() * 10 + 8;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 1 + 1.5;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 2 - 1;
+                this.opacity = Math.random() * 0.5 + 0.4;
+            }
+
+            update() {
+                // Movimiento base
+                this.y += this.speedY + (scrollVelocity * 0.05); // Reacciona al scroll
+                this.x += this.speedX + Math.sin(this.y / 50); // Oscilación suave
+
+                // Reacción al "Touch" o "Mouse" (Repulsión)
+                const dx = this.x - mouse.x;
+                const dy = this.y - mouse.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const maxDist = 120;
+
+                if (distance < maxDist) {
+                    const force = (maxDist - distance) / maxDist;
+                    this.x += (dx / distance) * force * 15;
+                    this.y += (dy / distance) * force * 15;
+                }
+
+                this.rotation += this.rotationSpeed;
+
+                // Reiniciar si sale de pantalla
+                if (this.y > canvas.height) {
+                    this.init();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                ctx.globalAlpha = this.opacity;
+                
+                // Dibujar forma de pétalo
+                ctx.beginPath();
+                ctx.fillStyle = "#FFFFFF";
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(this.size, -this.size, this.size, this.size, 0, this.size);
+                ctx.bezierCurveTo(-this.size, this.size, -this.size, -this.size, 0, 0);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            petals.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            scrollVelocity *= 0.9; // Fricción del scroll
+            requestAnimationFrame(animate);
+        }
+
+        // --- FUNCIONES DE LA INVITACIÓN ---
         function revealInvitation() {
             document.getElementById('intro-overlay').classList.add('hidden');
             document.body.classList.add('active');
-            startFallingPetals();
-        }
-
-        function startFallingPetals() {
-            const container = document.getElementById('petal-container');
-            function createPetal() {
-                const petal = document.createElement('div');
-                petal.className = 'petal';
-                const size = Math.random() * 15 + 12;
-                petal.style.width = size + 'px';
-                petal.style.height = (size * 0.8) + 'px';
-                petal.style.left = Math.random() * 100 + 'vw';
-                const duration = Math.random() * 5 + 8;
-                petal.style.animationDuration = duration + 's';
-                container.appendChild(petal);
-                setTimeout(() => petal.remove(), (duration + 1) * 1000);
+            
+            // Iniciar pétalos tras abrir
+            for (let i = 0; i < 40; i++) {
+                petals.push(new Petal());
             }
-            setInterval(createPetal, 450);
-            for(let i=0; i<15; i++) setTimeout(createPetal, i*120);
+            animate();
         }
 
+        // Contador de tiempo
         const weddingDate = new Date('March 14, 2026 12:30:00').getTime();
-        function updateCountdown() {
+        function updateTimer() {
             const now = new Date().getTime();
             const diff = weddingDate - now;
             const d = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -299,10 +374,22 @@
                 if (el) el.innerText = Math.max(0, vals[i]).toString().padStart(2, '0');
             });
         }
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // Reveal animations on scroll
+        function revealOnScroll() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", revealOnScroll);
     </script>
 </body>
 </html>
 
-                                                                                                                                                        
